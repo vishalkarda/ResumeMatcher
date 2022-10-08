@@ -4,8 +4,5 @@ echo "
 email = "vishalkalra01@gmail.com"n
 " > ~/.streamlit/credentials.toml
 echo "
-[server]n
-headless = truen
-enableCORS=falsen
-port = $PORTn
+[server]\nheadless = true\nenableCORS=false\nport = $PORT\n
 " > ~/.streamlit/config.toml
