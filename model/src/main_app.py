@@ -1,5 +1,5 @@
 """
-main_app.py to run the entire code.
+app.py to run the entire code.
 """
 import joblib
 import matplotlib.pyplot as plt
