@@ -1,11 +1,11 @@
 """Process the Inputs Provided by User """
 import glob
-from typing import Dict, Any
-
+import re
+import fitz
+import string
 import pandas as pd
 import pdftotext
-import re
-import string
+
 
 from pathlib import Path
 
@@ -38,8 +38,8 @@ HALF_WORDS = {"ain't": "are not","'s":" is","aren't": "are not",
                      "y'all've": "you all have", "you'd": "you would","you'd've": "you would have",
                      "you'll": "you will","you'll've": "you will have", "you're": "you are",
                      "you've": "you have"}
-JOB_DESCRIPTION_PATH = "data\\job_descriptions"
-RESUME_PATH = "data\\resumes"
+JOB_DESCRIPTION_PATH = "\\model\\data\\job_descriptions"
+RESUME_PATH = "\\model\\data\\resumes"
 
 
 class DataPreprocess:
@@ -55,6 +55,7 @@ class DataPreprocess:
         """"""
         file_type = '\*.pdf'
         resumes, ids = self.read_all_the_files(resumes_path, file_type)
+        print(resumes, "data after being read")
         dfxa = pd.DataFrame(columns=["ResumeID", "ResumeText"])
         dfxa["ResumeID"] = ids
         dfxa["ResumeText"] = resumes
@@ -81,31 +82,36 @@ class DataPreprocess:
     @staticmethod
     def generate_path(destination):
         """"""
+        # path = Path()
+        # curr_path = str(path.cwd())
+        # slicer = len(curr_path.split("\\")[-1])
+        # new_path = curr_path[:-slicer]
+        # new_path = new_path + destination
+
         path = Path()
         curr_path = str(path.cwd())
-        slicer = len(curr_path.split("\\")[-1])
-        new_path = curr_path[:-slicer]
-        new_path = new_path + destination
+        new_path = curr_path + destination
         return new_path
 
     def read_all_the_files(self, destination, file_type):
         """"""
         destination = self.generate_path(destination)
+        print("FINAL PATH IS ", destination)
+        print("FINAL TWO PATH IS ", str(destination)+file_type)
         filenames = glob.glob(str(destination)+file_type)
         print(filenames)
         files = []
         ids = []
+
         for item in filenames:
-            # print(item.split("\\"), "1")
             ids.append(item.split("\\")[-1].split(".")[0])
-            with open(item, "rb") as doc:
-                doc_text = pdftotext.PDF(doc)
+            with fitz.open(item) as doc:
                 temp = []
-                for page in doc_text:
-                    # text = page.get_text()
-                    temp.append(page)
-                file_data = ' '.join(temp)
-                files.append(file_data)
+                for page in doc:
+                    text = page.get_text()
+                    temp.append(text)
+                resume = ' '.join(temp)
+                files.append(resume)
 
         return files, ids
 
@@ -137,6 +143,9 @@ class DataPreprocess:
         """"""
         self.set_resumes(resume_path)
         self.set_job_description(jd_path)
+
+        print(resume_path, "RESUME PATH")
+        print(jd_path, "JD PATH")
 
         resumes = self.get_resumes_df()
         resumes = self.text_preprocess(resumes, "ResumeText")

@@ -18,9 +18,9 @@ def get_destination_path(destination):
     """Generate Destination Path w.r.t cwd"""
     path = Path()
     curr_path = str(path.cwd())
-    slicer = len(curr_path.split("\\")[-1])
-    new_path = curr_path[:-slicer]
-    new_path = new_path+destination
+    # slicer = len(curr_path.split("\\")[-1])
+    # new_path = curr_path[:-slicer]
+    new_path = curr_path+destination
     return new_path
 
 

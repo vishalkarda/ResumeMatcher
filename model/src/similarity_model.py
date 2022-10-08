@@ -1,10 +1,10 @@
 import joblib
 
-from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer, util
 
-from data_preprocessing import DataPreprocess
-from data_preprocessing import RESUME_PATH, JOB_DESCRIPTION_PATH
-from utils import get_destination_path
+from .data_preprocessing import DataPreprocess
+from .data_preprocessing import RESUME_PATH, JOB_DESCRIPTION_PATH
+from .utils import get_destination_path
 
 
 class SimilarityModel:
@@ -12,8 +12,12 @@ class SimilarityModel:
     @staticmethod
     def __load_model(model_name):
         """"""
-        model_path = get_destination_path("data\\trained_model")
-        model = joblib.load(model_path + "\\" + model_name)
+        # model = SentenceTransformer(model_name)
+        # output_path = get_destination_path("data\\trained_model")
+        # joblib.dump(model, output_path + "\\" + str("bert_transformer"))
+
+        model_path = get_destination_path("\\model\\data\\trained_model")
+        model = joblib.load(model_path + "\\"+model_name)
 
         return model
 
@@ -36,7 +40,7 @@ class PredictMatchingScore:
     def __calculate_similarity(embeddings1, embeddings2):
         """"""
         # Compute cosine-similarities
-        cosine_scores = cosine_similarity(embeddings1, embeddings2)
+        cosine_scores = util.cos_sim(embeddings1, embeddings2)
 
         return cosine_scores
 
@@ -64,10 +68,14 @@ class PredictMatchingScore:
 if __name__ == "__main__":
     sm_model = SimilarityModel()
     sm_model = sm_model.get_model()
+    print("Similarity Model Done")
     pred_obj = PredictMatchingScore(sm_model)
 
     dataframe_obj = DataPreprocess()
     model_data = dataframe_obj.run_preprocessing_pipeline(RESUME_PATH, JOB_DESCRIPTION_PATH)
+    print(model_data.columns)
 
     model_data = pred_obj.generate_results(model_data)
+    print(model_data.columns)
+    print(model_data.iloc[0])
 
