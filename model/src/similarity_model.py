@@ -1,7 +1,5 @@
 import joblib
 
-from sentence_transformers import SentenceTransformer, util
-
 from .data_preprocessing import DataPreprocess
 from .data_preprocessing import RESUME_PATH, JOB_DESCRIPTION_PATH
 from .utils import get_destination_path
@@ -40,7 +38,9 @@ class PredictMatchingScore:
     def __calculate_similarity(embeddings1, embeddings2):
         """"""
         # Compute cosine-similarities
-        cosine_scores = util.cos_sim(embeddings1, embeddings2)
+        cos_sim_path = get_destination_path("\\model\\src")
+        cos_sim = joblib.load(cos_sim_path + "\\" + "cos_sim")
+        cosine_scores = cos_sim(embeddings1, embeddings2)
 
         return cosine_scores
 
