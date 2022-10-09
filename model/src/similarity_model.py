@@ -18,6 +18,7 @@ class SimilarityModel:
         model_path = get_destination_path("/model/data/trained_model")
 
         # model = joblib.load(model_path + "\\"+model_name)
+        print("Path", model_path + "/" + model_name)
         model = joblib.load(model_path + "/" + model_name)
 
         return model
@@ -41,8 +42,11 @@ class PredictMatchingScore:
     def __calculate_similarity(embeddings1, embeddings2):
         """"""
         # Compute cosine-similarities
-        cos_sim_path = get_destination_path("\\model\\src")
-        cos_sim = joblib.load(cos_sim_path + "\\" + "cos_sim")
+        # cos_sim_path = get_destination_path("\\model\\src")
+        # cos_sim = joblib.load(cos_sim_path + "\\" + "cos_sim")
+
+        cos_sim_path = get_destination_path("/model/src")
+        cos_sim = joblib.load(cos_sim_path + "/" + "cos_sim")
         cosine_scores = cos_sim(embeddings1, embeddings2)
 
         return cosine_scores
