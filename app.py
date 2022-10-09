@@ -100,7 +100,7 @@ def resumes_after_processing_layout():
             st.pyplot(plt)
 
 
-def checking_something():
+def resume_ranking_ui():
     """"""
     dashes = "|"*10
     title = dashes+" You can Rank Your Resumes Here "+dashes
@@ -111,7 +111,8 @@ def checking_something():
             </div><br>"""
     st.markdown(html_temp, unsafe_allow_html=True)
 
-    folder_path = get_destination_path("\\model\\data\\model_output")
+    folder_path = get_destination_path("/model/data/model_output")
+    st.write(folder_path)
     if len(os.listdir(folder_path)) == 0:
         st.subheader("Please run a experiment first")
     else:
@@ -150,7 +151,7 @@ def main():
         resumes_processing_layout()
 
     elif choose == "ResumeRanking":
-        checking_something()
+        resume_ranking_ui()
 
     elif choose == "Author":
         col1, col2 = st.columns([0.8, 0.2])
