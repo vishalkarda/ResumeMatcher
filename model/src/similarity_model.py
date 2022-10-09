@@ -14,8 +14,11 @@ class SimilarityModel:
         # output_path = get_destination_path("data\\trained_model")
         # joblib.dump(model, output_path + "\\" + str("bert_transformer"))
 
-        model_path = get_destination_path("\\model\\data\\trained_model")
-        model = joblib.load(model_path + "\\"+model_name)
+        # model_path = get_destination_path("\\model\\data\\trained_model")
+        model_path = get_destination_path("/model/data/trained_model")
+
+        # model = joblib.load(model_path + "\\"+model_name)
+        model = joblib.load(model_path + "/" + model_name)
 
         return model
 
