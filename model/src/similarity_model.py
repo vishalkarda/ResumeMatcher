@@ -1,10 +1,7 @@
 import pickle
 
-import joblib
-
 from .data_preprocessing import DataPreprocess
 from .data_preprocessing import RESUME_PATH, JOB_DESCRIPTION_PATH
-from .utils import get_destination_path
 
 
 class SimilarityModel:
@@ -12,15 +9,6 @@ class SimilarityModel:
     @staticmethod
     def __load_model(model_name):
         """"""
-        # model = SentenceTransformer(model_name)
-        # output_path = get_destination_path("data\\trained_model")
-        # joblib.dump(model, output_path + "\\" + str("bert_transformer"))
-
-        # model_path = get_destination_path("\\model\\data\\trained_model")
-        # model_path = get_destination_path("/model/data/trained_model")
-        #
-        # # model = joblib.load(model_path + "\\"+model_name)
-        # print("Path", model_path + "/" + model_name)
         model = model_name
 
         with open('bert_transformer.pkl', 'rb') as f:
@@ -39,20 +27,13 @@ class PredictMatchingScore:
         self.__model = model
 
     def __generate_embeddings(self, data):
-        """"""
+        """Generate Embeddings from sentence-transformer"""
         embedding = self.__model.encode(data, convert_to_tensor=True)
         return embedding
 
     @staticmethod
     def __calculate_similarity(embeddings1, embeddings2):
-        """"""
-        # Compute cosine-similarities
-        # cos_sim_path = get_destination_path("\\model\\src")
-        # cos_sim = joblib.load(cos_sim_path + "\\" + "cos_sim")
-
-        # cos_sim_path = get_destination_path("/model/src")
-        # cos_sim = joblib.load(cos_sim_path + "/" + "cos_sim")
-
+        """Calculate Cosine Similarity on Embeddings"""
         with open('cos_sim.pkl', 'rb') as f:
             cos_sim = pickle.load(f)
 
@@ -72,7 +53,6 @@ class PredictMatchingScore:
 
         predicted_ss = []
 
-        # Output the pairs with their score
         for i in range(len(resumes)):
             predicted_ss.append(round(float(cosine_scores[i][i]), 2))
 

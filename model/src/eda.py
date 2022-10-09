@@ -19,7 +19,6 @@ def find_the_top_ngrams_from_count_vect(data, ngram_range, stop_words=None, topn
         words.append(word)
         frequencies.append(freq)
 
-    print(len(words), "SelectedWords")
     dfxa = pd.DataFrame({'Word': words, 'Freq': frequencies})
     return dfxa
 
