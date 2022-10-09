@@ -4,8 +4,6 @@ import re
 import fitz
 import string
 import pandas as pd
-import pdftotext
-
 
 from pathlib import Path
 
