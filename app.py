@@ -9,7 +9,6 @@ import streamlit as st
 
 from streamlit_option_menu import option_menu
 
-import model.src.data_preprocessing as data_prep
 from model.src.data_preprocessing import DataPreprocess
 from model.src.data_preprocessing import RESUME_PATH, JOB_DESCRIPTION_PATH
 from model.src.eda import get_top_words
