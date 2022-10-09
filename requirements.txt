@@ -6,3 +6,4 @@ matplotlib>=3.6.0
 scikit-learn>=1.1.2
 joblib>=1.2.0
 streamlit-option-menu>=0.3.2
+sentence-transformers==2.2.2
