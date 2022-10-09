@@ -1,11 +1,14 @@
 """
 app.py to run the entire code.
 """
-import joblib
-import matplotlib.pyplot as plt
 import os
+import fitz
+import joblib
+import pdfplumber
+import pandas as pd
 import seaborn as sns
 import streamlit as st
+import matplotlib.pyplot as plt
 
 from pathlib import Path
 from streamlit_option_menu import option_menu
@@ -20,38 +23,62 @@ from model.src.utils import set_up_initial_ui_layout, empty_data_folder
 
 def resumes_processing_layout():
     """Main Function to run the module"""
+    def extract_data(feed):
+        data = []
+        with pdfplumber.open(feed) as pdf:
+            pages = pdf.pages
+            for p in pages:
+                data.append(p.extract_text())
+        resume_pdf = ' '.join(data)
+        return resume_pdf
+
+    resumes_text = []
+    resumes_ids = []
     uploaded_resumes = st.file_uploader("Upload one or more Resumes",
                                         accept_multiple_files=True,
                                         type=["pdf"])
-
-    resume_path = get_destination_path("\\model\\data\\resumes")
-    print(Path.cwd(), "CurrentPath")
-    print(resume_path, "Resume Path is")
     if uploaded_resumes is not None:
+        st.write("Files Read")
         max_files = 10
         if len(uploaded_resumes) > max_files:
             st.warning(f"Maximum number of files reached. Only the first {max_files} will be processed.")
             uploaded_resumes = uploaded_resumes[:max_files]
-        save_files(resume_path, uploaded_resumes)
+        for resume in uploaded_resumes:
+            text = extract_data(resume)
+            resumes_text.append(text)
+            resumes_ids.append(str(resume.name).split(".")[0])
 
+    dfxa_resume = pd.DataFrame(columns=["ResumeID", "ResumeText"])
+    dfxa_resume["ResumeID"] = resumes_ids
+    dfxa_resume["ResumeText"] = resumes_text
+    dfxa_resume = dfxa_resume.drop_duplicates()
+
+    job_desc_text = []
+    jd_ids = []
     uploaded_jds = st.file_uploader("Upload one or more Job Description/s",
                                     accept_multiple_files=True,
                                     type=["pdf"])
-    jd_path = get_destination_path("\\model\\data\\job_descriptions")
-    print(jd_path, "Job Desc Path is")
     if uploaded_jds is not None:
         max_files = 10
         if len(uploaded_jds) > max_files:
             st.warning(f"Maximum number of files reached. Only the first {max_files} will be processed.")
             uploaded_jds = uploaded_jds[:max_files]
-        save_files(jd_path, uploaded_jds)
+        for jd in uploaded_jds:
+            text = extract_data(jd)
+            job_desc_text.append(text)
+            jd_ids.append(str(jd.name).split(".")[0])
+
+    dfxb_jd = pd.DataFrame(columns=["JobDescID", "JobDescription"])
+    dfxb_jd["JobDescID"] = jd_ids
+    dfxb_jd["JobDescription"] = job_desc_text
+    dfxb_jd = dfxb_jd.drop_duplicates()
 
     if uploaded_resumes != [] and uploaded_jds != []:
         if st.button("Match Resumes"):
-            resumes_after_processing_layout()
+            resumes_after_processing_layout(dfxa_resume, dfxb_jd)
 
 
-def resumes_after_processing_layout():
+def resumes_after_processing_layout(dfxa_resume, dfxb_jd):
     """"""
     results, eda = st.tabs(["RESULTS", "EDA"])
 
@@ -61,13 +88,14 @@ def resumes_after_processing_layout():
                  " and job description file name and their matching percentage.")
         sm_model = SimilarityModel()
         sm_model = sm_model.get_model()
-        pred_obj = PredictMatchingScore(sm_model)
 
         dataframe_obj = DataPreprocess()
-        model_data = dataframe_obj.run_preprocessing_pipeline(RESUME_PATH, JOB_DESCRIPTION_PATH)
+        # model_data = dataframe_obj.run_preprocessing_pipeline(RESUME_PATH, JOB_DESCRIPTION_PATH)
+        model_data = dataframe_obj.run_preprocessing_pipeline_direct(dfxa_resume, dfxb_jd)
 
+        pred_obj = PredictMatchingScore(sm_model)
         model_data = pred_obj.generate_results(model_data)
-        print(model_data, "this what we got let's see")
+        # print(model_data, "this what we got let's see")
         st.dataframe(data=model_data[["ResumeID", "JobDescID", "MatchPer"]])
 
         output_path = get_destination_path("\\model\\data\\model_output")

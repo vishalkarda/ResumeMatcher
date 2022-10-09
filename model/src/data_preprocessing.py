@@ -59,6 +59,14 @@ class DataPreprocess:
         dfxa["ResumeText"] = resumes
         self.resumes_df = dfxa
 
+    def set_resume_dataframe(self, dataframe):
+        """Setter Method"""
+        self.resumes_df = dataframe
+
+    def set_job_desc_dataframe(self, dataframe):
+        """Setter Method"""
+        self.jds_df = dataframe
+
     def get_resumes_df(self):
         """Getter Method for Resumes"""
         return self.resumes_df
@@ -94,10 +102,10 @@ class DataPreprocess:
     def read_all_the_files(self, destination, file_type):
         """"""
         destination = self.generate_path(destination)
-        print("FINAL PATH IS ", destination)
-        print("FINAL TWO PATH IS ", str(destination)+file_type)
+        # print("FINAL PATH IS ", destination)
+        # print("FINAL TWO PATH IS ", str(destination)+file_type)
         filenames = glob.glob(str(destination)+file_type)
-        print(filenames)
+        # print(filenames)
         files = []
         ids = []
 
@@ -142,8 +150,20 @@ class DataPreprocess:
         self.set_resumes(resume_path)
         self.set_job_description(jd_path)
 
-        print(resume_path, "RESUME PATH")
-        print(jd_path, "JD PATH")
+        resumes = self.get_resumes_df()
+        resumes = self.text_preprocess(resumes, "ResumeText")
+
+        job_desc = self.get_job_descriptions_df()
+        job_desc = self.text_preprocess(job_desc, "JobDescription")
+
+        updated_df = resumes.assign(key=1).merge(job_desc.assign(key=1), on='key').drop('key', axis=1)
+
+        return updated_df
+
+    def run_preprocessing_pipeline_direct(self, resume_df, jd_df):
+        """"""
+        self.set_resume_dataframe(resume_df)
+        self.set_job_desc_dataframe(jd_df)
 
         resumes = self.get_resumes_df()
         resumes = self.text_preprocess(resumes, "ResumeText")
@@ -153,7 +173,6 @@ class DataPreprocess:
 
         updated_df = resumes.assign(key=1).merge(job_desc.assign(key=1), on='key').drop('key', axis=1)
 
-        print(updated_df)
         return updated_df
 
 
@@ -161,15 +180,6 @@ if __name__ == "__main__":
     obj = DataPreprocess()
     obj.set_resumes(RESUME_PATH)
     obj.set_job_description(JOB_DESCRIPTION_PATH)
-
-    # resumes_ = obj.resumes_df
-    # jds_ = obj.jds_df
-    #
-    # dfxb = obj.text_preprocess(resumes_, "ResumeText")
-    # print(dfxb)
-    #
-    # dfxb = obj.text_preprocess(jds_, "JobDescription")
-    # print(dfxb)
     obj.run_preprocessing_pipeline(RESUME_PATH, JOB_DESCRIPTION_PATH)
 
 
