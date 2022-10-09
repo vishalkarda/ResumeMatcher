@@ -1,3 +1,5 @@
+import pickle
+
 import joblib
 
 from .data_preprocessing import DataPreprocess
@@ -15,15 +17,18 @@ class SimilarityModel:
         # joblib.dump(model, output_path + "\\" + str("bert_transformer"))
 
         # model_path = get_destination_path("\\model\\data\\trained_model")
-        model_path = get_destination_path("/model/data/trained_model")
+        # model_path = get_destination_path("/model/data/trained_model")
+        #
+        # # model = joblib.load(model_path + "\\"+model_name)
+        # print("Path", model_path + "/" + model_name)
+        model = model_name
 
-        # model = joblib.load(model_path + "\\"+model_name)
-        print("Path", model_path + "/" + model_name)
-        model = joblib.load(model_path + "/" + model_name)
+        with open('bert_transformer.pkl', 'rb') as f:
+            model = pickle.load(f)
 
         return model
 
-    def get_model(self, model_name='bert_transformer'):
+    def get_model(self, model_name='bert_transformer.pkl'):
         """"""
         return self.__load_model(model_name)
 
@@ -45,8 +50,12 @@ class PredictMatchingScore:
         # cos_sim_path = get_destination_path("\\model\\src")
         # cos_sim = joblib.load(cos_sim_path + "\\" + "cos_sim")
 
-        cos_sim_path = get_destination_path("/model/src")
-        cos_sim = joblib.load(cos_sim_path + "/" + "cos_sim")
+        # cos_sim_path = get_destination_path("/model/src")
+        # cos_sim = joblib.load(cos_sim_path + "/" + "cos_sim")
+
+        with open('cos_sim.pkl', 'rb') as f:
+            cos_sim = pickle.load(f)
+
         cosine_scores = cos_sim(embeddings1, embeddings2)
 
         return cosine_scores
@@ -75,14 +84,11 @@ class PredictMatchingScore:
 if __name__ == "__main__":
     sm_model = SimilarityModel()
     sm_model = sm_model.get_model()
-    print("Similarity Model Done")
     pred_obj = PredictMatchingScore(sm_model)
 
     dataframe_obj = DataPreprocess()
     model_data = dataframe_obj.run_preprocessing_pipeline(RESUME_PATH, JOB_DESCRIPTION_PATH)
-    print(model_data.columns)
 
     model_data = pred_obj.generate_results(model_data)
-    print(model_data.columns)
-    print(model_data.iloc[0])
+
 
