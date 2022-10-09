@@ -170,6 +170,6 @@ def main():
 
 
 if __name__ == "__main__":
-    empty_data_folder("\\model\\data\\job_descriptions")
-    empty_data_folder("\\model\\data\\resumes")
+    empty_data_folder("/model/data/job_descriptions")
+    empty_data_folder("/model/data/resumes")
     main()
