@@ -7,6 +7,7 @@ import os
 import seaborn as sns
 import streamlit as st
 
+from pathlib import Path
 from streamlit_option_menu import option_menu
 
 from model.src.data_preprocessing import DataPreprocess
@@ -24,6 +25,8 @@ def resumes_processing_layout():
                                         type=["pdf"])
 
     resume_path = get_destination_path("\\model\\data\\resumes")
+    print(Path.cwd(), "CurrentPath")
+    print(resume_path, "Resume Path is")
     if uploaded_resumes is not None:
         max_files = 10
         if len(uploaded_resumes) > max_files:
@@ -35,6 +38,7 @@ def resumes_processing_layout():
                                     accept_multiple_files=True,
                                     type=["pdf"])
     jd_path = get_destination_path("\\model\\data\\job_descriptions")
+    print(jd_path, "Job Desc Path is")
     if uploaded_jds is not None:
         max_files = 10
         if len(uploaded_jds) > max_files:
