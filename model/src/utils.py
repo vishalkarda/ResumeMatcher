@@ -35,4 +35,5 @@ def save_files(path, uploaded_files):
 def empty_data_folder(initial_path):
     """Deletes the unnecessary files at the start of the app."""
     complete_path = get_destination_path(initial_path)
+    print("COMPLETE", complete_path)
     deletion = [f.unlink() for f in Path(complete_path).glob("*") if f.is_file()]
